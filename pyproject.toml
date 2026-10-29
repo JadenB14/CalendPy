@@ -1,0 +1,13 @@
+[project]
+name = "calendpy"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautiful-date>=2.3.0",
+    "dearpygui>=2.3.1",
+    "gcsa>=2.7.0",
+    "oryks-google-calendar>=0.3.1",
+    "python-dotenv>=1.2.4",
+]
