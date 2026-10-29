@@ -25,8 +25,7 @@ event = Event(
 #    minutes_before_email_reminder=50
 )
 def main():
-
-    calendar.add_event(event)
+    pass
 
 
 if __name__ == "__main__":
