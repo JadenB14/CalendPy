@@ -1,3 +1,4 @@
+import dearpygui
 from gcsa.google_calendar import GoogleCalendar
 from dotenv import load_dotenv
 import os
@@ -14,6 +15,7 @@ gui_obj = gui.Gui(calendar)
 
 
 def main():
+    print(dearpygui.__path__)
     gui_obj.context()
 
 

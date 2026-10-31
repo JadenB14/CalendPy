@@ -2,10 +2,10 @@ from datetime import datetime
 import dearpygui.dearpygui as dpg
 from tracker_page import tracker_page
 from settings_page import settings_page
-from timer_page import timer_page
+from timer_page import Stopwatch
 
 now = datetime.now()
-
+timer = Stopwatch()
 
 
 class Gui():
@@ -26,7 +26,7 @@ class Gui():
             dpg.add_separator()
 
             tracker_page(self.calendar)
-            timer_page()
+            timer.timer_page(self.calendar)
             settings_page()
 
 
@@ -42,7 +42,9 @@ class Gui():
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.set_primary_window("prime", True)
-        dpg.start_dearpygui()
+        while dpg.is_dearpygui_running():
+            timer.update_stopwatch()
+            dpg.render_dearpygui_frame()
         dpg.destroy_context()
 
     def nav_bar(self):
