@@ -1,23 +1,28 @@
 from datetime import datetime
+from dotenv import load_dotenv
 import dearpygui.dearpygui as dpg
 from tracker_page import tracker_page
 from settings_page import settings_page
 from timer_page import Stopwatch
+from gcsa.google_calendar import GoogleCalendar
+import os
 
+
+load_dotenv()
+EMAIL = os.getenv("EMAIL")
 now = datetime.now()
-timer = Stopwatch()
 
 
 class Gui():
-    def __init__(self, calendar) -> None:
-        self.calendar = calendar
-
+    def __init__(self) -> None:
+        self.calendar = None
+        self.timer = Stopwatch()
+        if EMAIL:
+            self.update_calendar(EMAIL)
 
     def context(self) -> None:
         dpg.create_context()
-
         dpg.set_global_font_scale(2)
-
         self.set_theme()
 
         with dpg.window(tag="prime"):  # pyright: ignore[reportGeneralTypeIssues]
@@ -25,9 +30,9 @@ class Gui():
 
             dpg.add_separator()
 
-            tracker_page(self.calendar)
-            timer.timer_page(self.calendar)
-            settings_page()
+            tracker_page(lambda: self.calendar)
+            self.timer.timer_page(lambda: self.calendar)
+            settings_page(self.update_calendar)
 
 
         dpg.hide_item("timer_page")
@@ -43,7 +48,7 @@ class Gui():
         dpg.show_viewport()
         dpg.set_primary_window("prime", True)
         while dpg.is_dearpygui_running():
-            timer.update_stopwatch()
+            self.timer.update_stopwatch()
             dpg.render_dearpygui_frame()
         dpg.destroy_context()
 
@@ -186,3 +191,9 @@ class Gui():
         dpg.hide_item("settings_page")
 
         dpg.show_item(page)
+
+    def update_calendar(self, email):
+        self.calendar = GoogleCalendar(
+            "primary",
+            authentication_flow_port=8100
+        )

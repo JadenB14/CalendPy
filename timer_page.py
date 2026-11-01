@@ -15,7 +15,6 @@ class Stopwatch():
         self.elapsed: float = 0.0
         self.calendar_start_time = now
         self.calendar_end_time = now
-        self.select_is_on = False
 
     def start_stopwatch(self):
         if not self.running:
@@ -24,8 +23,9 @@ class Stopwatch():
             self.calendar_start_time = datetime.now()
         print(self.calendar_start_time)
 
-    def pause_stopwatch(self):
+    def pause_stopwatch(self, sender, app_data, user_data):
         combo_value = dpg.get_value("timer_input")
+        calendar = user_data()
 
         if self.running:
             self.elapsed += time.perf_counter() - self.start_time
@@ -34,7 +34,7 @@ class Stopwatch():
             if combo_value == "Select an option:":
                 raise Exception("Value needs to be selected.")
             else:
-                self.timer_submit()
+                self.timer_submit(calendar)
 
     def reset_stopwatch(self):
         self.running = False
@@ -67,7 +67,7 @@ class Stopwatch():
                 with dpg.font("./assets/ProggyClean.ttf", 48) as large_font:  # pyright: ignore[reportGeneralTypeIssues]
                     return large_font
 
-    def timer_submit(self):
+    def timer_submit(self, calendar):
         event_check = dpg.get_value("timer_input")
         event_start_time = self.calendar_start_time
         event_end_time = self.calendar_end_time
@@ -92,9 +92,7 @@ class Stopwatch():
             dpg.hide_item("custom_input_timer")
             dpg.set_value("custom_input_timer", "")
 
-    def timer_page(self, gcalendar):
-        global calendar
-        calendar = gcalendar
+    def timer_page(self, get_calendar):
 
         large_font = self.font_init()
 
@@ -147,7 +145,8 @@ class Stopwatch():
                 dpg.add_button(
                     label="Pause",
                     width=100,
-                    callback=self.pause_stopwatch
+                    callback=self.pause_stopwatch,
+                    user_data=get_calendar
                 )
 
                 dpg.add_button(

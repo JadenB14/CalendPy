@@ -2,12 +2,11 @@ from datetime import datetime
 import dearpygui.dearpygui as dpg
 from gcsa.event import Event
 
+
 now = datetime.now()
 
-def tracker_page(gcalendar):
-    global calendar
+def tracker_page(get_calendar):
 
-    calendar = gcalendar
     date = now.date()
     time = now.time()
 
@@ -71,7 +70,8 @@ def tracker_page(gcalendar):
             tag="submit",
             height=50,
             width=100,
-            callback=tracker_submit
+            callback=tracker_submit,
+            user_data=get_calendar
         )
 
 def dropdown_value(sender, app_data):
@@ -83,7 +83,14 @@ def dropdown_value(sender, app_data):
     else:
         return app_data
 
-def tracker_submit():
+def tracker_submit(sender, app_data, user_data):
+
+    calendar = user_data()
+
+    if calendar is None:
+        print("Please configure your Google Calendar Email in Settings.")
+        return
+
     event_check = dpg.get_value("tracker_input")
     event_start_time = dpg.get_value("start_time")
     event_end_time = dpg.get_value("end_time")
