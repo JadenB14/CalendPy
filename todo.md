@@ -1,0 +1,2 @@
+- Add pomodoro mode for timer
+- Implement more features to tracker

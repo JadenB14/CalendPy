@@ -18,8 +18,11 @@ class Stopwatch():
 
     def start_stopwatch(self):
         activity = dpg.get_value("timer_input")
+        custom_activity = dpg.get_value("custom_input_timer")
         if activity == "Select an option:":
             activity = "None"
+        elif activity == "Custom":
+            activity = custom_activity
 
         if not self.running:
             self.start_time = time.perf_counter()
