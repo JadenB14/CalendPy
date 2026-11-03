@@ -4,8 +4,6 @@ from datetime import datetime
 import dearpygui.dearpygui as dpg
 from gcsa.event import Event
 
-now = datetime.now()
-date = datetime.date(now)
 
 class Stopwatch():
 
@@ -13,36 +11,59 @@ class Stopwatch():
         self.running: bool = False
         self.start_time: float = 0.0
         self.elapsed: float = 0.0
-        self.calendar_start_time = now
-        self.calendar_end_time = now
+        self.total_elapsed: float = 0.0
+        self.calendar_start_time = datetime.now()
+        self.calendar_end_time = datetime.now()
+        self.timer_lap = []
 
     def start_stopwatch(self):
+        activity = dpg.get_value("timer_input")
+        if activity == "Select an option:":
+            activity = "None"
+
         if not self.running:
             self.start_time = time.perf_counter()
             self.running = True
             self.calendar_start_time = datetime.now()
+
+            self.add_log_entry(
+                f"{self.calendar_start_time.strftime('%I:%M:%S %p')} - Timer started ({activity})"
+            )
+
         print(self.calendar_start_time)
 
     def pause_stopwatch(self, sender, app_data, user_data):
-        combo_value = dpg.get_value("timer_input")
-        calendar = user_data()
-
         if self.running:
             self.elapsed += time.perf_counter() - self.start_time
             self.running = False
             self.calendar_end_time = datetime.now()
+            self.total_elapsed += self.elapsed
+
+            self.add_log_entry(
+                f"{self.calendar_end_time.strftime('%I:%M:%S %p')} - "
+                f"Timer stopped ({self.elapsed:.2f} seconds)"
+            )
+
+            combo_value = dpg.get_value("timer_input")
+            calendar = user_data()
+
             if combo_value == "Select an option:":
-                raise Exception("Value needs to be selected.")
+                print("Select an activity to add this session to your calendar")
+            elif calendar is None:
+                print("Please configure your Google Calendar first.")
             else:
                 self.timer_submit(calendar)
+
 
     def reset_stopwatch(self):
         self.running = False
         self.start_time = 0.0
         self.elapsed = 0.0
-        self.calendar_start_time = now
-        self.calendar_end_time= now
+        self.calendar_start_time = datetime.now()
+        self.calendar_end_time = datetime.now()
+        self.timer_lap = []
 
+        dpg.set_value("log_text", "")
         dpg.set_value("stopwatch_display", "00:00:00.000")
 
     def update_stopwatch(self):
@@ -92,6 +113,12 @@ class Stopwatch():
             dpg.hide_item("custom_input_timer")
             dpg.set_value("custom_input_timer", "")
 
+    def add_log_entry(self, message):
+        self.timer_lap.append(message)
+
+        log_text = "\n".join(self.timer_lap)
+        dpg.set_value("log_text", log_text)
+
     def timer_page(self, get_calendar):
 
         large_font = self.font_init()
@@ -108,20 +135,20 @@ class Stopwatch():
                 callback=self.dropdown_value,
                 width=300,
                 tag="timer_input",
-                pos=[400, 100]
+                pos=[375, 90]
             )
             dpg.add_input_text(
                 tag="custom_input_timer",
                 width=400,
                 hint="Custom Task:",
-                pos=[350, 150]
+                pos=[325, 130]
             )
             dpg.hide_item("custom_input_timer")
 
             dpg.add_text(
                 "00:00:00.000",
                 tag="stopwatch_display",
-                pos=[225, 200],
+                pos=[225, 160],
 
             )
 
@@ -131,7 +158,7 @@ class Stopwatch():
 
             with dpg.group(
                 horizontal=True,
-                pos=[300, 350],
+                pos=[300, 260],
                 width=150,
                 height=75
             ):  # pyright: ignore[reportGeneralTypeIssues]
@@ -154,3 +181,11 @@ class Stopwatch():
                     width=100,
                     callback=self.reset_stopwatch
                 )
+
+            with dpg.child_window(
+                tag="log_display",
+                height=300,
+                width=660,
+                pos=[200,350]
+            ):  # pyright: ignore[reportGeneralTypeIssues]
+                    dpg.add_text("", tag="log_text", wrap=0)

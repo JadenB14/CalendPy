@@ -1,8 +1,8 @@
 from datetime import datetime
 from dotenv import load_dotenv
 import dearpygui.dearpygui as dpg
-from tracker_page import tracker_page
-from settings_page import settings_page
+from tracker_page import Tracker
+from settings_page import Settings
 from timer_page import Stopwatch
 from gcsa.google_calendar import GoogleCalendar
 import os
@@ -17,6 +17,9 @@ class Gui():
     def __init__(self) -> None:
         self.calendar = None
         self.timer = Stopwatch()
+        self.settings = Settings()
+        self.tracker = Tracker()
+
         if EMAIL:
             self.update_calendar(EMAIL)
 
@@ -30,9 +33,9 @@ class Gui():
 
             dpg.add_separator()
 
-            tracker_page(lambda: self.calendar)
+            self.tracker.tracker_page(lambda: self.calendar)
             self.timer.timer_page(lambda: self.calendar)
-            settings_page(self.update_calendar)
+            self.settings.settings_page(self.update_calendar)
 
 
         dpg.hide_item("timer_page")
@@ -197,3 +200,4 @@ class Gui():
             "primary",
             authentication_flow_port=8100
         )
+        return email
