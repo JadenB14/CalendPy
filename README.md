@@ -57,8 +57,18 @@ Calendpy uses Google Calendar to create and manage calendar events. Before using
 1. In Google Cloud Console, navigate to **Google Auth Platform → Clients**.
 2. Create an OAuth client.
 3. Select the appropriate application type for your OAuth implementation.
-4. Download the OAuth client credentials.
-5. Place the downloaded credentials file in the location expected by Calendpy.
+4. Download the OAuth client JSON file.
+5. Create a directory named `.credentials` in your home directory if it doesn't already exist.
+6. Move the downloaded JSON file into that directory.
+7. Rename the file to `credentials.json`.
+
+Your credentials file should be located at:
+
+```text
+~/.credentials/credentials.json
+```
+
+**Important:** Calendpy expects the credentials file to be located at this exact path and to have this exact filename.
 
 You may need to authorize Calendpy through your browser the first time you connect your Google account.
 

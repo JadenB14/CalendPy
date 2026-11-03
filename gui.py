@@ -1,9 +1,9 @@
 from datetime import datetime
 from dotenv import load_dotenv
 import dearpygui.dearpygui as dpg
-from tracker_page import Tracker
-from settings_page import Settings
-from timer_page import Stopwatch
+from pages.tracker_page import Tracker
+from pages.settings_page import Settings
+from pages.timer_page import Stopwatch
 from gcsa.google_calendar import GoogleCalendar
 import os
 
